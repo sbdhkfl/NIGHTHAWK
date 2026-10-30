@@ -22,7 +22,7 @@ def _sanitize_rdap_object(obj: dict[str, Any]) -> dict[str, Any]:
     safe: dict[str, Any] = {}
     for key in (
         "handle", "name", "type", "status", "port43", "lang",
-        "startAddress", "endAddress", "ipVersion", "cidr0_cidr",
+        "startAddress", "endAddress", "ipVersion", "cidr0_cidr", "country",
     ):
         if key in obj:
             safe[key] = obj[key]
