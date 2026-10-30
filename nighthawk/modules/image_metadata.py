@@ -125,6 +125,9 @@ def run(image_path: str, session=None) -> list[dict[str, Any]]:
     if timestamps:
         metadata["timestamps"] = timestamps
 
+    metadata["gps_metadata_status"] = "present" if metadata.get("gps") else "not_embedded"
+    metadata["processing"] = "local_only; image bytes are not sent to search providers"
+
     return [
         {
             "module": "image_metadata",
