@@ -1,8 +1,4 @@
-"""Categorized public-page reference search for an email address.
-
-This is not an account-registration checker. It only searches public indexed
-pages and requires explicit opt-in plus a configured search provider.
-"""
+"""API-free category search links for an email address."""
 from __future__ import annotations
 
 from typing import Any
