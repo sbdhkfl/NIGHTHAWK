@@ -30,7 +30,7 @@ nighthawk subdomains example.com
 # Public IP registration and reverse DNS (public IPs only; no port scanning)
 nighthawk ip 8.8.8.8
 
-# Search public indexed pages for an email by category
+# Generate API-free public search links for an email by category
 nighthawk email-public you@example.com
 
 # Check common TCP ports on one private LAN IPv4 device you administer
@@ -39,7 +39,7 @@ nighthawk ip-ports 192.168.1.1 --authorized
 # Read devices already in this Kali host's ARP/NDP neighbor cache
 nighthawk lan-devices
 
-# Email technical checks plus categorized public-page references
+# Email technical checks plus API-free manual public-search links
 nighthawk email you@example.com
 
 # Phone numbering metadata; include country calling code
@@ -107,7 +107,7 @@ Optional provider keys are read from environment variables in `.env`. Start from
 cp .env.example .env
 ```
 
-Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. For email public-reference searches, set `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` and configure at least one of `BRAVE_SEARCH_API_KEY` or `TAVILY_API_KEY`. Email categories are social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Search providers receive the email address. Results are public-page leads, not proof of registration. Dating and adult-content account discovery is not included. Keep `.env` private and never commit it.
+Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. The `nighthawk email-public EMAIL` command requires no API key and no `.env` setting. It creates Google search links for social media, developer, professional/portfolio, forums/communities, and gaming/streaming categories. NIGHTHAWK does not send the email to a provider; Google receives the query only if you open a link. Review results manually: they are not proof of registration. Dating and adult-content account discovery is not included. Optional automated searches for other modules may still use configured provider keys.
 
 ## Troubleshooting
 
