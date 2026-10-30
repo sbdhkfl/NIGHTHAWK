@@ -26,6 +26,7 @@ from nighthawk.core.models import (
 from nighthawk.core.validation import (
     validate_domain,
     validate_email,
+    validate_cve,
     validate_image_filename,
     validate_ip,
     validate_phone,
@@ -357,6 +358,7 @@ class Engine:
         from nighthawk.modules.image_metadata import run as image_run
         from nighthawk.modules.ip_intel import run as ip_run
         from nighthawk.modules.phone import run as phone_run
+        from nighthawk.modules.kev import run as kev_run
         from nighthawk.modules.search import run as search_run
         from nighthawk.modules.subdomains import run as subdomains_run
         from nighthawk.modules.username import run as username_run
@@ -367,6 +369,7 @@ class Engine:
         register_module("subdomains", validate_domain, subdomains_run)
         register_module("ip", validate_ip, ip_run)
         register_module("phone", validate_phone, phone_run)
+        register_module("kev", validate_cve, kev_run)
         register_module("email", validate_email, email_run)
         register_module("image", validate_image_filename, image_run)
         register_module("search", lambda v: v, search_run)
@@ -377,6 +380,7 @@ _VALIDATORS: dict[str, callable] = {
     "domain": validate_domain,
     "ip": validate_ip,
     "phone": validate_phone,
+    "cve": validate_cve,
     "email": validate_email,
     "image": validate_image_filename,
 }
