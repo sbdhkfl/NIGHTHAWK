@@ -37,12 +37,14 @@ geolocation is claimed.
 ## F. Email intelligence (`email`)
 
 - Syntax validation
-- Domain validation
-- MX record check
+- MX records and cautious mail-provider infrastructure hints
+- SPF and DMARC domain authentication records
 - Disposable email domain detection (maintained internal list, non-exhaustive)
-- Optional Have I Been Pwned lookup — only when `HIBP_API_KEY` is explicitly set
+- Optional Have I Been Pwned breach-status lookup — only when `HIBP_API_KEY` is explicitly set
 
-Email addresses are never sent to external providers without authorization.
+These checks do not verify that a specific mailbox exists. NIGHTHAWK does not
+perform SMTP recipient probing, account enumeration, login attempts, or password
+discovery. An HIBP match is not proof of current account compromise.
 
 ## G. Image metadata intelligence (`image`)
 
