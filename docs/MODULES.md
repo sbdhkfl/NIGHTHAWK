@@ -97,11 +97,12 @@ a complete router client list and does not identify device owners.
 
 ## N. Categorized email public references (`email-public`)
 
-Searches public indexed pages in social media, developer, professional/portfolio,
-forums/communities, and gaming/streaming categories. Requires the explicit
-public-search opt-in and a configured Brave or Tavily API key. It does not use
-login, password-reset, or account-recovery endpoints and cannot confirm whether
-an email is registered with a service.
+Generates API-free Google search links for public indexed pages in social media,
+developer, professional/portfolio, forums/communities, and gaming/streaming
+categories. NIGHTHAWK does not send the query; the search engine receives it
+only if the user opens a link. Search results are leads, not proof of account
+registration. It does not probe login, password-reset, or account-recovery
+endpoints.
 
 
 ## O. Local email account inventory (`email-audit`)
