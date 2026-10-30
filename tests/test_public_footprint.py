@@ -8,6 +8,7 @@ def test_public_search_disabled_by_default(monkeypatch):
     monkeypatch.delenv("NIGHTHAWK_ENABLE_PUBLIC_SEARCH", raising=False)
     reset_settings_cache()
     assert collect_public_search_findings("alice@example.com", "email", '"alice@example.com"') == []
+    reset_settings_cache()
 
 
 def test_public_search_returns_cautious_possible_matches(monkeypatch):
@@ -39,3 +40,4 @@ def test_public_search_returns_cautious_possible_matches(monkeypatch):
     assert findings[0]["confidence"] == "low"
     assert findings[0]["result_data"]["match_type"] == "possible_public_reference"
     assert "does not prove" in findings[0]["result_data"]["interpretation"]
+    reset_settings_cache()
