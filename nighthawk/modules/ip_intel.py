@@ -12,10 +12,10 @@ from typing import Any
 import dns.resolver
 import dns.reversename
 
-from nighthawk.core.validation import is_private_or_reserved, validate_ip
-from nighthawk.integrations.rdap import rdap_lookup
 from nighthawk.core.config import get_settings
+from nighthawk.core.validation import is_private_or_reserved, validate_ip
 from nighthawk.integrations.abuseipdb import check_ip_reputation
+from nighthawk.integrations.rdap import rdap_lookup
 
 
 def _safe_reverse_dns(ip: str) -> list[str]:
