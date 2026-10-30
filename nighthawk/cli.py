@@ -138,6 +138,49 @@ def email(value: str) -> None:
     _print_findings(findings)
 
 
+@app.command(name="email-public")
+def email_public(value: str) -> None:
+    """Search public indexed pages for an email across social, developer and community categories."""
+    _show_banner()
+    engine = Engine()
+    inv = engine.create_investigation(f"email public references: {value}")
+    try:
+        findings = engine.run_module(inv.id, "email", value, "email_public")
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+    _print_findings(findings)
+
+
+@app.command(name="ip-ports")
+def ip_ports(value: str) -> None:
+    """Check a fixed set of common TCP ports on one private LAN IP you administer."""
+    _show_banner()
+    engine = Engine()
+    inv = engine.create_investigation(f"private LAN TCP exposure check: {value}")
+    try:
+        findings = engine.run_module(inv.id, "ip", value, "ip_ports")
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+    _print_findings(findings)
+
+
+@app.command(name="lan-devices")
+def lan_devices() -> None:
+    """List devices already visible in this Linux computer's ARP/NDP neighbor cache."""
+    _show_banner()
+    engine = Engine()
+    target = "local-neighbor-table"
+    inv = engine.create_investigation("local LAN neighbor inventory")
+    try:
+        findings = engine.run_module(inv.id, "local_network", target, "lan_devices")
+    except (RuntimeError, ValueError) as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+    _print_findings(findings)
+
+
 @app.command()
 def cve(value: str) -> None:
     """Check a CVE identifier against CISA Known Exploited Vulnerabilities."""
