@@ -14,6 +14,8 @@ import dns.reversename
 
 from nighthawk.core.validation import is_private_or_reserved, validate_ip
 from nighthawk.integrations.rdap import rdap_lookup
+from nighthawk.core.config import get_settings
+from nighthawk.integrations.abuseipdb import check_ip_reputation
 
 
 def _safe_reverse_dns(ip: str) -> list[str]:
@@ -84,6 +86,18 @@ def run(ip: str, session=None) -> list[dict[str, Any]]:
             },
             "source": rdap_data.get("rdap_url") or f"https://rdap.org/ip/{ip}",
             "confidence": "medium",
+        })
+
+    api_key = get_settings().ABUSEIPDB_API_KEY
+    if api_key:
+        reputation = check_ip_reputation(ip, api_key)
+        findings.append({
+            "module": "ip", "target": ip,
+            "result_data": {
+                "abuseipdb": reputation,
+                "interpretation": "Reputation scores are community/provider signals, not proof that an address is malicious.",
+            },
+            "source": "https://www.abuseipdb.com/", "confidence": "medium",
         })
 
     if len(findings) == 1 and not reverse_dns:
