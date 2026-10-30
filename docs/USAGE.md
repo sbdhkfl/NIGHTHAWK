@@ -30,9 +30,6 @@ nighthawk subdomains example.com
 # Public IP registration and reverse DNS (public IPs only; no port scanning)
 nighthawk ip 8.8.8.8
 
-# Generate API-free public search links for an email by category
-nighthawk email-public you@example.com
-
 # Check common TCP ports on one private LAN IPv4 device you administer
 nighthawk ip-ports 192.168.1.1 --authorized
 
@@ -82,22 +79,6 @@ nighthawk report 1 --format html --output report
 ```
 
 Replace `1` with the investigation ID. NIGHTHAWK adds the appropriate extension if it is not already present. Files are written relative to the current directory unless you provide an absolute output path.
-
-## Dashboard
-
-Install the optional dashboard dependencies once:
-
-```bash
-python -m pip install -e ".[dashboard]"
-```
-
-Start the dashboard:
-
-```bash
-nighthawk dashboard
-```
-
-Open http://127.0.0.1:8000 on the same computer. The dashboard binds to localhost by default.
 
 ## Configuration
 
