@@ -2,7 +2,7 @@
 
 ## Public reference discovery (shared integration)
 
-When `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` and at least one Brave/Tavily API key is configured, the email, username, domain and public-IP modules append up to eight deduplicated public search results. These are marked `possible_public_reference` with low confidence. The exact identifier is sent to the configured provider, so the feature is disabled by default. Results are leads only and do not establish identity or account ownership. Phone lookups remain numbering-plan metadata; image analysis remains local-only EXIF extraction.
+When `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` and at least one Brave/Tavily API key is configured, email, username, domain and public-IP modules can search indexed public pages. Email searches run separate social-media, developer, professional/portfolio, forums/communities and gaming/streaming categories. The exact email is sent to the configured provider. Results are marked as low-confidence public references and do not prove registration, identity or account ownership. The feature is disabled by default. Phone lookups remain numbering-plan metadata; image analysis remains local-only EXIF extraction.
 
 ## A. Username intelligence (`username`)
 
@@ -79,3 +79,26 @@ When `ABUSEIPDB_API_KEY` is configured, public IP investigations query AbuseIPDB
 ## K. Defensive vulnerability intelligence (`kev`)
 
 The `nighthawk cve CVE-2024-12345` command checks a CVE identifier against CISA's public Known Exploited Vulnerabilities catalog. This is catalog intelligence only: NIGHTHAWK does not probe, scan, or exploit hosts.
+
+
+## L. Private LAN TCP exposure check (`ip-ports`)
+
+Checks a fixed set of common TCP ports on one RFC1918 private IPv4 address.
+The CLI requires `--authorized`. It reports open ports and cautious service
+exposure notes; it does not fingerprint versions, authenticate, exploit, or
+claim that an open port is a confirmed vulnerability. Public IPs and CIDR
+ranges are rejected.
+
+## M. Local neighbor inventory (`lan-devices`)
+
+Reads the Linux host's existing ARP/NDP neighbor cache using `ip neigh show`.
+This is passive and may omit sleeping or previously unseen devices. It is not
+a complete router client list and does not identify device owners.
+
+## N. Categorized email public references (`email-public`)
+
+Searches public indexed pages in social media, developer, professional/portfolio,
+forums/communities, and gaming/streaming categories. Requires the explicit
+public-search opt-in and a configured Brave or Tavily API key. It does not use
+login, password-reset, or account-recovery endpoints and cannot confirm whether
+an email is registered with a service.
