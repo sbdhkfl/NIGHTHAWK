@@ -185,10 +185,32 @@ class Engine:
 
             results = runner(target_value, session)
 
+            # Every finding references a persisted Target row. CLI module runs
+            # may start directly without calling add_target(), so create or
+            # reuse that row here.
+            target_record = (
+                session.query(Target)
+                .filter_by(
+                    investigation_id=investigation_id,
+                    target_type=target_type,
+                    value=target_value,
+                )
+                .first()
+            )
+            if target_record is None:
+                target_record = Target(
+                    investigation_id=investigation_id,
+                    target_type=target_type,
+                    value=target_value,
+                )
+                session.add(target_record)
+                session.flush()
+
             findings_out: list[dict[str, Any]] = []
             for result in results:
                 finding = Finding(
                     investigation_id=investigation_id,
+                    target_id=target_record.id,
                     module=result.get("module", module_name),
                     target=result.get("target", target_value),
                     result_data=json.dumps(result.get("result_data", {}), default=str),
