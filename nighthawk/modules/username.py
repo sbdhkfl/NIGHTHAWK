@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from nighthawk.modules.base import HttpClient, classify_status
+from nighthawk.integrations.public_footprint import collect_public_search_findings
 
 # Public profile URL templates. Each entry: platform name -> URL template with
 # {username} placeholder. Ordered from most to least commonly useful.
@@ -87,7 +88,11 @@ def run(username: str, session=None) -> list[dict[str, Any]]:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future = executor.submit(asyncio.run, _check_username(username))
-            return future.result()
+            findings = future.result()
+    findings.extend(collect_public_search_findings(
+        username, "username", f'"{username}"'
+    ))
+    return findings
 
 
 __all__ = ["run", "PLATFORMS"]
