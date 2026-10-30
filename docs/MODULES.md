@@ -102,3 +102,14 @@ forums/communities, and gaming/streaming categories. Requires the explicit
 public-search opt-in and a configured Brave or Tavily API key. It does not use
 login, password-reset, or account-recovery endpoints and cannot confirm whether
 an email is registered with a service.
+
+
+## O. Local email account inventory (`email-audit`)
+
+Reads a user-supplied browser/password-manager CSV export locally and lists
+service URLs whose saved username exactly matches the supplied email. It
+supports common URL/website and username/email column names. Password and
+secret columns are ignored and never included in findings. The CSV is not
+uploaded or persisted by this module. A saved entry is evidence of an entry in
+that export, not proof that the account is active or accessible. The export
+may contain credentials, so keep it private and remove it after use.
