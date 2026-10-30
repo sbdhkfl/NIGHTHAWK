@@ -106,6 +106,16 @@ def is_private_or_reserved(ip_str: str) -> bool:
     )
 
 
+def validate_cve(value: str) -> str:
+    """Validate a CVE identifier for defensive catalog lookups."""
+    if not value or not isinstance(value, str):
+        raise ValidationError("CVE identifier is required")
+    cve = value.strip().upper()
+    if not re.fullmatch(r"CVE-[0-9]{4}-[0-9]{4,}", cve):
+        raise ValidationError("expected a CVE identifier such as CVE-2024-12345")
+    return cve
+
+
 def validate_phone(value: str) -> str:
     """Validate and normalize an international phone number to E.164."""
     if not value or not isinstance(value, str):
