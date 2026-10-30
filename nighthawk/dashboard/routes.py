@@ -166,6 +166,27 @@ def create_investigation(
     return RedirectResponse(url=f"/investigations/{inv.id}", status_code=303)
 
 
+@router.post("/investigations/{investigation_id}/targets")
+def add_investigation_target(
+    request: Request,
+    investigation_id: int,
+    target_type: str = Form(...),
+    value: str = Form(...),
+    csrf_token: str | None = Form(None),
+) -> Response:
+    """Add a validated target to an investigation."""
+    _verify_csrf(request, csrf_token)
+    if target_type not in {"username", "domain", "ip", "email", "phone", "cve"}:
+        raise HTTPException(status_code=400, detail="Unsupported target type")
+    try:
+        _engine().add_target(investigation_id, target_type, value)
+    except EngineError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from None
+    return RedirectResponse(url=f"/investigations/{investigation_id}", status_code=303)
+
+
 # --------------------------------------------------------------------------- #
 # Investigation detail
 # --------------------------------------------------------------------------- #
