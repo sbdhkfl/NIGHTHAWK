@@ -24,9 +24,9 @@ from nighthawk.core.models import (
     Target,
 )
 from nighthawk.core.validation import (
+    validate_cve,
     validate_domain,
     validate_email,
-    validate_cve,
     validate_image_filename,
     validate_ip,
     validate_phone,
@@ -357,8 +357,8 @@ class Engine:
         from nighthawk.modules.email import run as email_run
         from nighthawk.modules.image_metadata import run as image_run
         from nighthawk.modules.ip_intel import run as ip_run
-        from nighthawk.modules.phone import run as phone_run
         from nighthawk.modules.kev import run as kev_run
+        from nighthawk.modules.phone import run as phone_run
         from nighthawk.modules.search import run as search_run
         from nighthawk.modules.subdomains import run as subdomains_run
         from nighthawk.modules.username import run as username_run
