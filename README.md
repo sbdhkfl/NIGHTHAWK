@@ -86,6 +86,9 @@ nighthawk username YOUR_USERNAME
 # Domain registration and DNS
 nighthawk domain example.com
 
+# Investigate the domain behind a URL
+nighthawk url https://example.com/path
+
 # DNS records only
 nighthawk dns example.com
 
@@ -161,7 +164,8 @@ Optional variables include:
 - `HIBP_API_KEY` — Have I Been Pwned integration.
 - `BRAVE_SEARCH_API_KEY` — Brave Search provider.
 - `TAVILY_API_KEY` — Tavily search provider.
-- `ABUSEIPDB_API_KEY` — aggregate reputation information for public IPs.\n- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly allow email, username, domain and public-IP identifiers to be sent to configured Brave/Tavily providers for public-reference searches. Keep this `false` unless you understand and accept that data sharing.
+- `ABUSEIPDB_API_KEY` — aggregate reputation information for public IPs.
+- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly allow email, username, domain and public-IP identifiers to be sent to configured Brave/Tavily providers for public-reference searches. Keep this `false` unless you understand and accept that data sharing.
 
 Keep `.env` private. Never commit API keys or personal investigation data.
 
@@ -195,7 +199,8 @@ nighthawk investigations --help
 
 - Public profile checks are indicative; HTTP 200 is not proof of account ownership.
 - Email checks do not verify mailbox access or reveal all services where an address has logged in.
-- Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.\n- Identifier searches are disabled by default. When enabled, queries are sent to configured third-party search providers.
+- Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.
+- Identifier searches are disabled by default. When enabled, queries are sent to configured third-party search providers.
 - IP location is not precise geolocation.
 - No credential theft, password cracking, phishing, malware, unauthorized login, authentication bypass, intrusive scanning or exploitation.
 - Respect provider terms, rate limits, privacy and applicable law.
