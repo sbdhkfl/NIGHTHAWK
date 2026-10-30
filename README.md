@@ -67,7 +67,6 @@ cd ~/NIGHTHAWK
 git pull --ff-only origin main
 source .venv/bin/activate
 python -m pip install -e .
-python -m pip install -e ".[dashboard]"
 nighthawk --help
 ```
 
@@ -174,37 +173,3 @@ source .venv/bin/activate
 python -m pip install -e .
 nighthawk --help
 ``
-
-**Dashboard dependencies missing**
-```bash
-source .venv/bin/activate
-python -m pip install -e ".[dashboard]"
-``
-
-**Check a command's actual syntax**
-```bash
-nighthawk --help
-nighthawk email --help
-nighthawk report --help
-nighthawk investigations --help
-``
-
-**Installation/build errors:** use a documented Python version (3.11–3.13), ensure the virtual environment is active, and share the complete error output when requesting help.
-
-## Privacy, accuracy and safety
-
-- Public profile checks are indicative; HTTP 200 is not proof of account ownership.
-- Email checks do not verify mailbox access or reveal all services where an address has logged in.
-- Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.
-- The `email` command generates public search links locally without calling an API. If you open a link, the search engine receives the email query. Results are not proof of account registration.
-- `ip-ports` accepts only RFC1918 private IPv4 addresses and requires `--authorized`; it checks a fixed set of common TCP ports. Open ports are exposure signals, not confirmed vulnerabilities.
-- `lan-devices` reads only the Kali host's existing ARP/NDP neighbor cache; it may omit devices and is not the router's authoritative client list.
-- IP location is not precise geolocation.
-- No credential theft, password cracking, phishing, malware, unauthorized login, authentication bypass, intrusive scanning or exploitation.
-- Respect provider terms, rate limits, privacy and applicable law.
-
-Read [docs/USAGE.md](docs/USAGE.md), [docs/MODULES.md](docs/MODULES.md) and [SECURITY.md](SECURITY.md).
-
-## License and contributing
-
-Released under the MIT License. See [LICENSE](LICENSE). Contributions, bug reports and improvements are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
