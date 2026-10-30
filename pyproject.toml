@@ -4,6 +4,17 @@ version = "1.0.0"
 description = "A modular, cross-platform Open-Source Intelligence gathering and investigation framework."
 readme = "README.md"
 requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27.0",
+    "dnspython>=2.6.1",
+    "python-whois>=0.9.0",
+    "typer[all]>=0.12.0",
+    "rich>=13.7.0",
+    "SQLAlchemy>=2.0.29",
+    "pydantic>=2.9.0",
+    "Pillow>=10.3.0",
+    "phonenumbers>=8.13.0",
+]
 license = {text = "MIT"}
 authors = [{name = "NIGHTHAWK OSINT Contributors"}]
 keywords = ["osint", "cybersecurity", "investigation", "dns", "whois", "rdap"]
