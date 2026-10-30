@@ -45,6 +45,7 @@ geolocation is claimed.
 - SPF and DMARC domain authentication records
 - Disposable email domain detection (maintained internal list, non-exhaustive)
 - Optional Have I Been Pwned breach-status lookup — only when `HIBP_API_KEY` is explicitly set
+- API-free categorized public search links for social media, developer, professional/portfolio, forums/communities and gaming/streaming references
 
 These checks do not verify that a specific mailbox exists. NIGHTHAWK does not
 perform SMTP recipient probing, account enumeration, login attempts, or password
@@ -94,23 +95,3 @@ ranges are rejected.
 Reads the Linux host's existing ARP/NDP neighbor cache using `ip neigh show`.
 This is passive and may omit sleeping or previously unseen devices. It is not
 a complete router client list and does not identify device owners.
-
-## N. Categorized email public references (`email-public`)
-
-Generates API-free Google search links for public indexed pages in social media,
-developer, professional/portfolio, forums/communities, and gaming/streaming
-categories. NIGHTHAWK does not send the query; the search engine receives it
-only if the user opens a link. Search results are leads, not proof of account
-registration. It does not probe login, password-reset, or account-recovery
-endpoints.
-
-
-## O. Local email account inventory (`email-audit`)
-
-Reads a user-supplied browser/password-manager CSV export locally and lists
-service URLs whose saved username exactly matches the supplied email. It
-supports common URL/website and username/email column names. Password and
-secret columns are ignored and never included in findings. The CSV is not
-uploaded or persisted by this module. A saved entry is evidence of an entry in
-that export, not proof that the account is active or accessible. The export
-may contain credentials, so keep it private and remove it after use.
