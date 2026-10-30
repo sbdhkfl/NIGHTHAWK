@@ -201,7 +201,7 @@ async def run_investigation(
 
     selected = [m.strip() for m in modules.split(",") if m.strip()]
     if not selected:
-        selected = ["username", "domain", "dns", "ip", "email", "phone", "search"]
+        selected = ["username", "domain", "dns", "ip", "email", "phone", "search", "kev"]
 
     targets = [{"type": t["type"], "value": t["value"]} for t in summary["targets"]]
     all_results: dict[str, Any] = {}
