@@ -27,10 +27,19 @@ nighthawk dns example.com
 # Passive subdomain discovery from Certificate Transparency logs
 nighthawk subdomains example.com
 
-# Public IP registration and reverse DNS (public IPs only)
+# Public IP registration and reverse DNS (public IPs only; no port scanning)
 nighthawk ip 8.8.8.8
 
-# Email syntax, mail DNS and optional breach-status lookup
+# Search public indexed pages for an email by category
+nighthawk email-public you@example.com
+
+# Check common TCP ports on one private LAN IPv4 device you administer
+nighthawk ip-ports 192.168.1.1 --authorized
+
+# Read devices already in this Kali host's ARP/NDP neighbor cache
+nighthawk lan-devices
+
+# Email technical checks plus categorized public-page references
 nighthawk email you@example.com
 
 # Phone numbering metadata; include country calling code
@@ -98,7 +107,7 @@ Optional provider keys are read from environment variables in `.env`. Start from
 cp .env.example .env
 ```
 
-Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. Set `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` only if you explicitly want email, username, domain and public-IP identifiers sent to configured Brave/Tavily search providers. This is disabled by default. Phone numbers are not reverse-searched, and image files are never uploaded. Keep `.env` private and never commit it.
+Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. For email public-reference searches, set `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` and configure at least one of `BRAVE_SEARCH_API_KEY` or `TAVILY_API_KEY`. Email categories are social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Search providers receive the email address. Results are public-page leads, not proof of registration. Dating and adult-content account discovery is not included. Keep `.env` private and never commit it.
 
 ## Troubleshooting
 
@@ -125,3 +134,12 @@ If a command fails, copy the complete traceback and the exact command (remove pe
 - **None:** no confidence-bearing evidence was available.
 
 A result count is not a count of confirmed accounts or breaches. Review each finding, source and confidence level before drawing conclusions.
+
+
+## IP and local network commands
+
+- `nighthawk ip PUBLIC_IP` — public registration, network range and reverse DNS only.
+- `nighthawk ip-ports PRIVATE_LAN_IP --authorized` — checks a fixed list of common TCP ports on one RFC1918 private IPv4 address. It does not exploit, authenticate, or test vulnerabilities. An open port is not itself a vulnerability.
+- `nighthawk lan-devices` — reads the current Linux ARP/NDP neighbor cache. It is passive and may not list every device connected to the router.
+
+Only use the LAN commands on devices and networks you own or administer.
