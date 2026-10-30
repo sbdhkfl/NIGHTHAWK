@@ -71,7 +71,7 @@ class Target(Base):
 
     investigation: Mapped[Investigation] = relationship("Investigation", back_populates="targets")
     findings: Mapped[list[Finding]] = relationship(
-        "Finding", back_populates="target", cascade="all, delete-orphan"
+        "Finding", back_populates="target_record", cascade="all, delete-orphan"
     )
 
 
@@ -97,7 +97,7 @@ class Finding(Base):
     )
 
     investigation: Mapped[Investigation] = relationship("Investigation", back_populates="findings")
-    target: Mapped[Target] = relationship("Target", back_populates="findings")
+    target_record: Mapped[Target] = relationship("Target", back_populates="findings")
 
 
 class Source(Base):
