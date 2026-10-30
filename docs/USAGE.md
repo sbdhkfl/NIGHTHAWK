@@ -107,7 +107,7 @@ Optional provider keys are read from environment variables in `.env`. Start from
 cp .env.example .env
 ```
 
-Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. The `nighthawk email-public EMAIL` command requires no API key and no `.env` setting. It creates Google search links for social media, developer, professional/portfolio, forums/communities, and gaming/streaming categories. NIGHTHAWK does not send the email to a provider; Google receives the query only if you open a link. Review results manually: they are not proof of registration. Dating and adult-content account discovery is not included. Optional automated searches for other modules may still use configured provider keys.
+Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. The `nighthawk email-audit EMAIL CSV_PATH` command inspects a local CSV export for exact email matches in username fields. It ignores password columns and does not upload the file. Keep the export private and remove it when finished. The `nighthawk email-public EMAIL` command requires no API key and no `.env` setting. It creates Google search links for social media, developer, professional/portfolio, forums/communities, and gaming/streaming categories. NIGHTHAWK does not send the email to a provider; Google receives the query only if you open a link. Review results manually: they are not proof of registration. Dating and adult-content account discovery is not included. Optional automated searches for other modules may still use configured provider keys.
 
 ## Troubleshooting
 
