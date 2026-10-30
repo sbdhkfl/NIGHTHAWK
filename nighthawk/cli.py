@@ -138,48 +138,6 @@ def email(value: str) -> None:
     _print_findings(findings)
 
 
-@app.command(name="email-audit")
-def email_audit(value: str, csv_path: str) -> None:
-    """Audit your own local browser/password-manager CSV export for saved logins."""
-    _show_banner()
-    from nighthawk.modules.local_accounts import run as audit_local_accounts
-
-    try:
-        findings = audit_local_accounts(value, csv_path)
-    except (FileNotFoundError, ValueError) as exc:
-        console.print(f"[red]Error:[/red] {exc}")
-        raise typer.Exit(code=1) from None
-
-    console.print("[bold]Local account inventory[/bold]")
-    console.print("[dim]Only matching saved-login entries are shown. Password columns are ignored; the export stays on this computer.[/dim]")
-    if not findings:
-        console.print("[yellow]No exact email matches found in this export.[/yellow]")
-        return
-    table = Table(title=f"{len(findings)} matching saved-login entries", header_style="green")
-    table.add_column("Service")
-    table.add_column("Saved URL")
-    table.add_column("Evidence")
-    for finding in findings:
-        data = finding["result_data"]
-        table.add_row(data["service_domain"], data["service_url"], "Exact email in local export")
-    console.print(table)
-    console.print("[dim]A saved entry does not prove the account is active or accessible.[/dim]")
-
-
-@app.command(name="email-public")
-def email_public(value: str) -> None:
-    """Generate API-free public search links for an email across supported categories."""
-    _show_banner()
-    engine = Engine()
-    inv = engine.create_investigation(f"email public references: {value}")
-    try:
-        findings = engine.run_module(inv.id, "email", value, "email_public")
-    except ValueError as exc:
-        console.print(f"[red]Error:[/red] {exc}")
-        raise typer.Exit(code=1) from None
-    _print_findings(findings)
-
-
 @app.command(name="ip-ports")
 def ip_ports(
     value: str,
