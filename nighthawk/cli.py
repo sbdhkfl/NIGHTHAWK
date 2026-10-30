@@ -110,6 +110,20 @@ def email(value: str) -> None:
 
 
 @app.command()
+def phone(value: str) -> None:
+    """Inspect international phone-number numbering-plan metadata."""
+    _show_banner()
+    engine = Engine()
+    inv = engine.create_investigation(f"phone metadata: {value}")
+    try:
+        findings = engine.run_module(inv.id, "phone", value, "phone")
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+    _print_findings(findings)
+
+
+@app.command()
 def image(path: str) -> None:
     """Extract EXIF metadata from a local image file."""
     _show_banner()
