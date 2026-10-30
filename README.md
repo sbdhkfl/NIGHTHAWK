@@ -8,7 +8,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 
 ## What it can investigate
 
-- **Email:** technical mail-domain checks plus API-free, category-specific public search links for social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Results must be reviewed manually and do not verify registrations.
+- **Email:** technical mail-domain checks, categorized public references, and a local-only saved-account audit from your own browser/password-manager CSV export for social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Results must be reviewed manually and do not verify registrations.
 - **Username:** possible matching public profiles on supported platforms. A match is a lead, not proof that you own or logged into an account.
 - **Domain / URL:** DNS and RDAP information; `nighthawk url https://example.com/path` extracts the hostname and investigates the domain without crawling the page.
 - **Subdomains:** passive Certificate Transparency discovery.
@@ -19,7 +19,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 - **Public references:** manual public-search links for email (no API key required); optional automated public-page searches for other identifiers can still use configured providers. Search links are not proof of account registration.
 - **Investigations and reports:** save findings locally and export JSON, CSV or HTML.
 
-NIGHTHAWK cannot reveal every website where an email address has logged in. Private login history is held by each service or may be available in your own browser/password manager. Public account checks can return false positives and false negatives.
+NIGHTHAWK cannot reveal every website where an email address has logged in. Private login history is held by each service or may be available in your own browser/password manager. `email-audit` can inventory matching saved-login entries in a local CSV export; it does not inspect passwords or upload the file. Public account checks can return false positives and false negatives.
 
 ## Installation
 
@@ -209,7 +209,7 @@ nighthawk investigations --help
 - Public profile checks are indicative; HTTP 200 is not proof of account ownership.
 - Email checks do not verify mailbox access or reveal all services where an address has logged in.
 - Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.
-- The `email-public` command generates search links locally without calling an API. If you open a link, the search engine receives the email query. Other optional automated identifier searches send queries to configured third-party providers. Dating and adult-content account discovery is not included.
+- The `email-audit` command reads your own CSV export locally, ignores password columns, and does not upload or persist secrets. Treat the export as highly sensitive and delete it securely when finished.\n- The `email-public` command generates search links locally without calling an API. If you open a link, the search engine receives the email query. Other optional automated identifier searches send queries to configured third-party providers. Dating and adult-content account discovery is not included.
 - `ip-ports` accepts only RFC1918 private IPv4 addresses and requires `--authorized`; it checks a fixed set of common TCP ports. Open ports are exposure signals, not confirmed vulnerabilities.
 - `lan-devices` reads only the Kali host's existing ARP/NDP neighbor cache; it may omit devices and is not the router's authoritative client list.
 - IP location is not precise geolocation.
