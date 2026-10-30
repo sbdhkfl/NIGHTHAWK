@@ -23,6 +23,12 @@ nighthawk ip 8.8.8.8
 # Email intelligence
 nighthawk email researcher@example.com
 
+# Phone metadata (international number with country calling code)
+nighthawk phone +14155552671
+
+# Defensive CVE lookup against CISA KEV (no host scanning)
+nighthawk cve CVE-2024-12345
+
 # Image EXIF metadata (local file only)
 nighthawk image ./photo.jpg
 
