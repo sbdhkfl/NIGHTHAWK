@@ -12,7 +12,7 @@ import dns.resolver
 from nighthawk.core.config import get_settings
 from nighthawk.core.validation import validate_email
 from nighthawk.integrations.hibp import hibp_lookup
-from nighthawk.integrations.public_footprint import collect_public_search_findings
+from nighthawk.integrations.public_footprint import collect_email_public_references
 
 DISPOSABLE_DOMAINS: frozenset[str] = frozenset({
     "mailinator.com", "guerrillamail.com", "10minutemail.com",
@@ -118,9 +118,7 @@ def run(email: str, session=None) -> list[dict[str, Any]]:
             },
             "source": "https://haveibeenpwned.com/", "confidence": "none",
         })
-    findings.extend(collect_public_search_findings(
-        email, "email", f'"{email}"'
-    ))
+    findings.extend(collect_email_public_references(email))
     return findings
 
 
