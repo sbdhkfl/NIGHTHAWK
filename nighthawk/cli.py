@@ -229,16 +229,6 @@ def search(query: str) -> None:
     _print_findings(findings)
 
 
-@app.command()
-def dashboard() -> None:
-    """Launch the NIGHTHAWK web dashboard."""
-    _show_banner()
-    from nighthawk.dashboard.app import main
-
-    console.print("[green]Starting dashboard at http://127.0.0.1:8000[/green]")
-    main()
-
-
 investigations_app = typer.Typer(name="investigations", help="Manage saved investigations.")
 app.add_typer(investigations_app, name="investigations")
 
