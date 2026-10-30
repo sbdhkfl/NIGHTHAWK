@@ -70,3 +70,8 @@ Accepts international numbers with a country calling code and reports formatting
 ## J. Optional IP reputation (`ip`)
 
 When `ABUSEIPDB_API_KEY` is configured, public IP investigations query AbuseIPDB for aggregate reputation signals. The queried IP is sent to that provider. Private and non-global IPs remain blocked. Scores are signals, not proof of malicious activity.
+
+
+## K. Defensive vulnerability intelligence (`kev`)
+
+The `nighthawk cve CVE-2024-12345` command checks a CVE identifier against CISA's public Known Exploited Vulnerabilities catalog. This is catalog intelligence only: NIGHTHAWK does not probe, scan, or exploit hosts.
