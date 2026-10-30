@@ -379,6 +379,8 @@ class Engine:
         from nighthawk.modules.email import run as email_run
         from nighthawk.modules.image_metadata import run as image_run
         from nighthawk.modules.ip_intel import run as ip_run
+        from nighthawk.modules.ip_ports import run as ip_ports_run
+        from nighthawk.modules.lan_devices import run as lan_devices_run
         from nighthawk.modules.kev import run as kev_run
         from nighthawk.modules.phone import run as phone_run
         from nighthawk.modules.search import run as search_run
@@ -390,6 +392,8 @@ class Engine:
         register_module("dns", validate_domain, dns_run)
         register_module("subdomains", validate_domain, subdomains_run)
         register_module("ip", validate_ip, ip_run)
+        register_module("ip_ports", lambda value: value, ip_ports_run)
+        register_module("lan_devices", lambda value: value, lan_devices_run)
         register_module("phone", validate_phone, phone_run)
         register_module("kev", validate_cve, kev_run)
         register_module("email", validate_email, email_run)
