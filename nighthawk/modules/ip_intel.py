@@ -16,6 +16,7 @@ from nighthawk.core.config import get_settings
 from nighthawk.core.validation import is_private_or_reserved, validate_ip
 from nighthawk.integrations.abuseipdb import check_ip_reputation
 from nighthawk.integrations.rdap import rdap_lookup
+from nighthawk.integrations.public_footprint import collect_public_search_findings
 
 
 def _safe_reverse_dns(ip: str) -> list[str]:
@@ -106,6 +107,9 @@ def run(ip: str, session=None) -> list[dict[str, Any]]:
             "result_data": {"message": "No RDAP or reverse-DNS information was discovered."},
             "source": None, "confidence": "none",
         })
+    findings.extend(collect_public_search_findings(
+        ip, "ip", f'"{ip}"'
+    ))
     return findings
 
 
