@@ -110,6 +110,20 @@ def email(value: str) -> None:
 
 
 @app.command()
+def cve(value: str) -> None:
+    """Check a CVE identifier against CISA Known Exploited Vulnerabilities."""
+    _show_banner()
+    engine = Engine()
+    inv = engine.create_investigation(f"CVE intelligence: {value}")
+    try:
+        findings = engine.run_module(inv.id, "cve", value, "kev")
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+    _print_findings(findings)
+
+
+@app.command()
 def phone(value: str) -> None:
     """Inspect international phone-number numbering-plan metadata."""
     _show_banner()
