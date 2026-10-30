@@ -15,8 +15,10 @@ framework with a professional terminal interface and a modern web dashboard.
 - **Domain intelligence** — DNS records (A, AAAA, MX, NS, TXT, CNAME, SOA) plus RDAP
   registration lookup.
 - **Subdomain intelligence** — passive discovery via Certificate Transparency (crt.sh).
-- **IP intelligence** — RDAP, ASN, network range, reverse DNS; public IPs only.
-- **Email intelligence** — syntax/MX checks, disposable-domain detection, optional Have I
+- **IP intelligence** — RDAP registration, network range, reverse DNS, and optional AbuseIPDB aggregate reputation; public IPs only.
+- **Phone metadata** — international formatting, numbering-plan validity, calling code, region, and number type; no subscriber identification.
+- **Defensive vulnerability intelligence** — CVE lookups against CISA's Known Exploited Vulnerabilities catalog; no host scanning or exploitation.
+- **Email intelligence** — syntax, MX, SPF, DMARC, provider hints, disposable-domain detection, optional Have I
   Been Pwned lookup with a user-provided API key.
 - **Image intelligence** — EXIF metadata (camera, timestamps, GPS) from local images.
 - **Public search intelligence** — provider-based search (Brave Search, Tavily) via API keys.
@@ -93,6 +95,7 @@ NIGHTHAWK_PORT=8000
 BRAVE_SEARCH_API_KEY=...
 TAVILY_API_KEY=...
 HIBP_API_KEY=...
+ABUSEIPDB_API_KEY=...
 ```
 
 API keys are optional. The framework works without them; provider-backed modules simply
@@ -112,6 +115,8 @@ nighthawk dns example.com
 nighthawk subdomains example.com
 nighthawk ip 8.8.8.8
 nighthawk email researcher@example.com
+nighthawk phone +14155552671
+nighthawk cve CVE-2024-12345
 nighthawk image ./photo.jpg
 nighthawk search "public cybersecurity research"
 
