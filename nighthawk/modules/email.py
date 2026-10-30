@@ -1,15 +1,11 @@
 """Email intelligence module.
 
-Performs syntax and domain validation, MX record checks, optional disposable
-email domain detection, and optional Have I Been Pwned lookup (only with an
-explicitly configured API key).
+Collects technical, domain-level email signals from DNS and optional breach
+status from Have I Been Pwned when an API key is explicitly configured.
 
-Privacy:
-- Never sends an email address externally without authorization (HIBP requires
-  a configured API key).
-- Never stores passwords or attempts logins.
+This module does not attempt mailbox logins, SMTP recipient probing, password
+discovery, account enumeration, or collection of private personal records.
 """
-
 from __future__ import annotations
 
 from typing import Any
@@ -19,95 +15,116 @@ from nighthawk.core.validation import validate_email
 from nighthawk.integrations.hibp import hibp_lookup
 from nighthawk.modules.base import resolve_dns
 
-# Small maintained list of well-known disposable email domains. Optional and
-# non-exhaustive; results are clearly marked as "suspected disposable".
 DISPOSABLE_DOMAINS: frozenset[str] = frozenset({
     "mailinator.com", "guerrillamail.com", "10minutemail.com",
-    "temp-mail.org", "dispostable.com", "maildrop.cc",
-    "yopmail.com", "tempmailo.com", "getnada.com",
+    "temp-mail.org", "dispostable.com", "maildrop.cc", "yopmail.com",
+    "tempmailo.com", "getnada.com",
 })
+
+# Common MX patterns are only hints about infrastructure, not proof of identity.
+_PROVIDER_HINTS = (
+    (("google.com", "googlemail.com"), "Google Workspace / Gmail"),
+    (("outlook.com", "protection.outlook.com", "hotmail.com"), "Microsoft mail"),
+    (("yahoodns.net", "yahoo.com"), "Yahoo Mail"),
+    (("zoho.com", "zohomail.com"), "Zoho Mail"),
+    (("icloud.com", "apple.com"), "Apple iCloud Mail"),
+    (("protonmail.ch", "protonmail.com"), "Proton Mail"),
+)
+
+
+def _txt_records(name: str) -> list[str]:
+    try:
+        return [str(value).strip('"') for value in resolve_dns(name, ["TXT"]).get("TXT", [])]
+    except Exception:
+        return []
+
+
+def _provider_hint(mx_records: list[str]) -> str | None:
+    hosts = " ".join(mx_records).lower()
+    for patterns, label in _PROVIDER_HINTS:
+        if any(pattern in hosts for pattern in patterns):
+            return label
+    return "Other / custom mail infrastructure" if mx_records else None
 
 
 def run(email: str, session=None) -> list[dict[str, Any]]:
-    """Run email intelligence checks.
-
-    Returns a list of finding dicts compatible with the investigation engine.
-    """
+    """Run non-invasive technical checks for an email address."""
     email = validate_email(email)
     _, domain = email.rsplit("@", 1)
     findings: list[dict[str, Any]] = []
 
-    # Syntax + domain validity already enforced by validate_email.
-    findings.append(
-        {
-            "module": "email",
-            "target": email,
-            "result_data": {
-                "syntax_valid": True,
-                "domain": domain,
-            },
-            "source": None,
-            "confidence": "high",
-        }
-    )
+    findings.append({
+        "module": "email", "target": email,
+        "result_data": {"syntax_valid": True, "domain": domain},
+        "source": None, "confidence": "high",
+    })
 
-    # MX record check.
-    mx_records: list[str] = []
     try:
-        dns = resolve_dns(domain, ["MX"])
-        mx_records = dns.get("MX", [])
-    except Exception:  # pragma: no cover - best effort
+        mx_records = resolve_dns(domain, ["MX"]).get("MX", [])
+    except Exception:
         mx_records = []
+    findings.append({
+        "module": "email", "target": email,
+        "result_data": {
+            "mx_records": mx_records, "has_mx": bool(mx_records),
+            "mail_provider_hint": _provider_hint(mx_records),
+            "message": "MX records discovered" if mx_records else "No MX records discovered",
+            "limitation": "MX records show domain mail routing, not whether this mailbox exists.",
+        },
+        "source": f"dns://{domain}", "confidence": "high" if mx_records else "medium",
+    })
 
-    mx_confidence = "high" if mx_records else "none"
-    findings.append(
-        {
-            "module": "email",
-            "target": email,
-            "result_data": {
-                "mx_records": mx_records,
-                "has_mx": bool(mx_records),
-                "message": (
-                    "domain accepts mail" if mx_records else "no MX records discovered"
-                ),
-            },
-            "source": f"dns://{domain}",
-            "confidence": mx_confidence,
-        }
-    )
-
-    # Disposable domain detection.
     is_disposable = domain in DISPOSABLE_DOMAINS
-    findings.append(
-        {
-            "module": "email",
-            "target": email,
-            "result_data": {
-                "suspected_disposable": is_disposable,
-                "dataset": "internal maintained list (non-exhaustive)",
-            },
-            "source": None,
-            "confidence": "medium" if is_disposable else "low",
-        }
-    )
+    findings.append({
+        "module": "email", "target": email,
+        "result_data": {
+            "suspected_disposable": is_disposable,
+            "dataset": "internal maintained list (non-exhaustive)",
+        },
+        "source": None, "confidence": "medium" if is_disposable else "low",
+    })
 
-    # Optional HIBP lookup, only when an API key is explicitly configured.
+    # Sender-policy signals are domain-level and do not validate a mailbox.
+    root_txt = _txt_records(domain)
+    spf = [record for record in root_txt if record.lower().startswith("v=spf1")]
+    dmarc = _txt_records(f"_dmarc.{domain}")
+    dmarc = [record for record in dmarc if record.lower().startswith("v=dmarc1")]
+    findings.append({
+        "module": "email", "target": email,
+        "result_data": {
+            "spf_records": spf,
+            "spf_present": bool(spf),
+            "dmarc_records": dmarc,
+            "dmarc_present": bool(dmarc),
+            "note": "SPF and DMARC describe domain email-authentication policy; absence is not proof of fraud.",
+        },
+        "source": f"dns://{domain}", "confidence": "high",
+    })
+
     settings = get_settings()
     if settings.HIBP_API_KEY:
         try:
             hibp = hibp_lookup(email, settings.HIBP_API_KEY)
-        except Exception as exc:  # pragma: no cover - defensive
-            hibp = {"error": str(exc)}
+        except Exception:
+            hibp = {"error": "Breach-status provider request failed"}
         if hibp:
-            findings.append(
-                {
-                    "module": "email",
-                    "target": email,
-                    "result_data": hibp,
-                    "source": "https://haveibeenpwned.com/",
-                    "confidence": "high",
-                }
-            )
+            findings.append({
+                "module": "email", "target": email,
+                "result_data": {
+                    **hibp,
+                    "interpretation": "A breach match does not prove current account access or compromise.",
+                },
+                "source": "https://haveibeenpwned.com/", "confidence": "high",
+            })
+    else:
+        findings.append({
+            "module": "email", "target": email,
+            "result_data": {
+                "breach_check": "not_run",
+                "reason": "Configure HIBP_API_KEY to enable the authorized breach-status provider.",
+            },
+            "source": "https://haveibeenpwned.com/", "confidence": "none",
+        })
 
     return findings
 
