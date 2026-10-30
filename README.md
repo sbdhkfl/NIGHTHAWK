@@ -39,8 +39,8 @@ Python 3.11+ (tested on 3.11, 3.12, 3.13).
 
 ```powershell
 # Clone the repository
-git clone https://github.com/<you>/nighthawk-osint.git
-cd nighthawk-osint
+git clone https://github.com/sbdhkfl/NIGHTHAWK.git
+cd NIGHTHAWK
 
 # Create a virtual environment
 python -m venv .venv
@@ -60,8 +60,8 @@ nighthawk --help
 ### Linux (Ubuntu / Debian / Kali)
 
 ```bash
-git clone https://github.com/<you>/nighthawk-osint.git
-cd nighthawk-osint
+git clone https://github.com/sbdhkfl/NIGHTHAWK.git
+cd NIGHTHAWK
 
 python3 -m venv .venv
 source .venv/bin/activate
