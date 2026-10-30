@@ -13,6 +13,7 @@ def test_public_search_disabled_by_default(monkeypatch):
 
 def test_public_search_returns_cautious_possible_matches(monkeypatch):
     monkeypatch.setenv("NIGHTHAWK_ENABLE_PUBLIC_SEARCH", "true")
+    monkeypatch.setenv("BRAVE_SEARCH_API_KEY", "test-key")
     reset_settings_cache()
     monkeypatch.setattr(
         "nighthawk.integrations.public_footprint.search_all_providers",
