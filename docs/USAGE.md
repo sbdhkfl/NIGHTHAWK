@@ -18,6 +18,9 @@ nighthawk username YOUR_USERNAME
 # Domain DNS and RDAP intelligence
 nighthawk domain example.com
 
+# Investigate the domain behind an HTTP or HTTPS URL
+nighthawk url https://example.com/path
+
 # DNS records only
 nighthawk dns example.com
 
