@@ -1,0 +1,20 @@
+{# module_result partial #}
+<div class="module-card">
+  <h4>{{ module }} — {{ target }}</h4>
+  {% if findings %}
+  <table>
+    <thead><tr><th>Confidence</th><th>Source</th><th>Data</th></tr></thead>
+    <tbody>
+    {% for f in findings %}
+    <tr>
+      <td><span class="conf conf-{{ f.confidence or 'none' }}">{{ f.confidence or 'none' }}</span></td>
+      <td><a href="{{ f.source }}" target="_blank" rel="noopener" class="muted">{{ f.source or '-' }}</a></td>
+      <td><pre style="font-size:0.75rem;">{{ f.result_data | tojson }}</pre></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No findings.</p>
+  {% endif %}
+</div>

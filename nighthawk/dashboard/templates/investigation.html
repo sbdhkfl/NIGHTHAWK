@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block page_title %}Investigation {{ investigation.id }}{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>{{ investigation.name }}</h2>
+  <div class="meta-row" style="margin-bottom:12px;">
+    <span class="badge">ID {{ investigation.id }}</span>
+    <span class="badge">Targets: {{ investigation.target_count }}</span>
+    <span class="badge">Findings: {{ investigation.finding_count }}</span>
+    <span class="badge">Sources: {{ investigation.source_count }}</span>
+    <span class="badge">Notes: {{ investigation.note_count }}</span>
+    <span class="muted">Updated {{ investigation.updated_at }}</span>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <h3>Targets</h3>
+      <table>
+        <thead><tr><th>Type</th><th>Value</th></tr></thead>
+        <tbody>
+        {% for t in investigation.targets %}
+        <tr><td>{{ t.type }}</td><td><code>{{ t.value }}</code></td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>Add Target</h3>
+      <form hx-post="/investigations/{{ investigation.id }}/run" hx-target="#results-container" hx-swap="innerHTML">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="form-group">
+          <label>Module</label>
+          <select name="modules" multiple size="6">
+            <option value="username">Username Intel</option>
+            <option value="domain">Domain Intel</option>
+            <option value="dns">DNS Intel</option>
+            <option value="subdomains">Subdomain Intel</option>
+            <option value="ip">IP Intel</option>
+            <option value="email">Email Intel</option>
+            <option value="search">Search Intel</option>
+          </select>
+          <p class="hint">Hold Ctrl/Cmd to select multiple. Leave empty to run all applicable modules.</p>
+        </div>
+        <p class="hint">Runs selected modules against all targets in this investigation.</p>
+        <button class="btn" type="submit">Run Modules</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="results-container">
+    <h3>Findings</h3>
+    {% if investigation.findings %}
+    <table>
+      <thead><tr><th>ID</th><th>Module</th><th>Target</th><th>Confidence</th><th>Source</th><th>Collected</th></tr></thead>
+      <tbody>
+      {% for f in investigation.findings %}
+      <tr>
+        <td>{{ f.id }}</td>
+        <td>{{ f.module }}</td>
+        <td>{{ f.target }}</td>
+        <td><span class="conf conf-{{ f.confidence or 'none' }}">{{ f.confidence or 'none' }}</span></td>
+        <td><a href="{{ f.source }}" target="_blank" rel="noopener" class="muted">{{ f.source or '-' }}</a></td>
+        <td>{{ f.collected_at }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="muted">No findings yet. Run modules above.</p>
+    {% endif %}
+  </div>
+
+  <h3>Add Note</h3>
+  <form hx-post="/investigations/{{ investigation.id }}/notes" hx-target="#notes-list" hx-swap="beforeend">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="form-group" style="display:flex;gap:8px;">
+      <input type="text" name="content" required placeholder="Add an investigation note..." style="flex:1;">
+      <button class="btn" type="submit">Add Note</button>
+    </div>
+  </form>
+  <div id="notes-list">
+    {% for n in investigation.notes %}
+    <div class="note">{{ n.content }} <span class="muted">— {{ n.created_at }}</span></div>
+    {% endfor %}
+  </div>
+
+  <div style="margin-top:24px;">
+    <h3>Export Report</h3>
+    <div class="toolbar" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="/investigations/{{ investigation.id }}/export/json" class="btn">Export JSON</a>
+      <a href="/investigations/{{ investigation.id }}/export/csv" class="btn">Export CSV</a>
+      <a href="/investigations/{{ investigation.id }}/export/html" class="btn">Export HTML</a>
+      <a href="/investigations/{{ investigation.id }}/graph" class="btn btn-ghost">Relationship Graph</a>
+    </div>
+  </div>
+
+  <form hx-post="/investigations/{{ investigation.id }}/delete" hx-target="body" hx-swap="innerHTML" style="margin-top:24px;" onsubmit="return confirm('Delete this investigation?')">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn btn-danger" type="submit">Delete Investigation</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+{# results_table partial #}
+<h3>Results</h3>
+{% if results %}
+<table>
+  <thead><tr><th>Target</th><th>Module</th><th>Confidence</th><th>Source</th><th>Data</th></tr></thead>
+  <tbody>
+  {% for key, findings in results.items() %}
+    {% for f in findings %}
+    <tr>
+      <td><code>{{ f.target }}</code></td>
+      <td>{{ f.module }}</td>
+      <td><span class="conf conf-{{ f.confidence or 'none' }}">{{ f.confidence or 'none' }}</span></td>
+      <td><a href="{{ f.source }}" target="_blank" rel="noopener" class="muted">{{ f.source or '-' }}</a></td>
+      <td><pre style="font-size:0.75rem;">{{ f.result_data | tojson }}</pre></td>
+    </tr>
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No results returned.</p>
+{% endif %}

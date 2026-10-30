@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}NIGHTHAWK OSINT{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<script src="https://unpkg.com/htmx-ext-ws@2.0.1/ws.js"></script>
+<script defer src="{{ url_for('static', path='js/app.js') }}"></script>
+</head>
+<body class="dashboard">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="logo">NIGHTHAWK</div>
+    <div class="tagline" style="font-size:0.72rem;color:var(--muted);margin-top:4px;">OSINT · v1.0.0</div>
+  </div>
+  <nav class="nav">
+    <a href="/" class="nav-item {% if request.url.path == '/' %}active{% endif %}">Overview</a>
+    <a href="/investigations/new" class="nav-item {% if request.url.path.startswith('/investigations/new') %}active{% endif %}">New Investigation</a>
+    <a href="/investigations" class="nav-item {% if request.url.path == '/investigations' %}active{% endif %}">Investigations</a>
+    <div class="nav-section">Modules</div>
+    <a href="#" class="nav-item" data-module="username">Username Intel</a>
+    <a href="#" class="nav-item" data-module="domain">Domain Intel</a>
+    <a href="#" class="nav-item" data-module="ip">IP Intel</a>
+    <a href="#" class="nav-item" data-module="email">Email Intel</a>
+    <a href="#" class="nav-item" data-module="image">Image Intel</a>
+    <a href="#" class="nav-item" data-module="search">Search Intel</a>
+    <div class="nav-section">Reports</div>
+    <a href="#" class="nav-item">Reports</a>
+    <div class="nav-section">Settings</div>
+    <a href="#" class="nav-item">Settings</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-toggle" aria-label="Toggle menu">&#9776;</button>
+    <h1>{% block page_title %}NIGHTHAWK OSINT{% endblock %}</h1>
+    <span class="meta" id="clock"></span>
+  </header>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var toggle = document.querySelector('.menu-toggle');
+  var sidebar = document.querySelector('.sidebar');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+    });
+  }
+  function tick() {
+    var el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
+  }
+  tick(); setInterval(tick, 1000);
+});
+</script>
+</body>
+</html>

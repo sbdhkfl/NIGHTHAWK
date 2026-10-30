@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_title %}Overview{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Overview</h2>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-value">{{ investigation_count }}</div>
+      <div class="stat-label">Investigations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">{{ finding_count }}</div>
+      <div class="stat-label">Collected Findings</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">{{ modules|length }}</div>
+      <div class="stat-label">Available Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">localhost</div>
+      <div class="stat-label">Dashboard Host</div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Recently Updated Investigations</h2>
+  {% if recent %}
+  <table>
+    <thead><tr><th>ID</th><th>Name</th><th>Targets</th><th>Findings</th><th>Updated</th></tr></thead>
+    <tbody>
+    {% for inv in recent %}
+    <tr>
+      <td>{{ inv.id }}</td>
+      <td><a href="/investigations/{{ inv.id }}">{{ inv.name }}</a></td>
+      <td>{{ inv.targets|join(', ') }}</td>
+      <td>-</td>
+      <td>{{ inv.updated }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No investigations yet. Create one to get started.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Available Modules</h2>
+  <p class="subtitle">Run these from the CLI or inside an investigation from the dashboard.</p>
+  <table>
+    <thead><tr><th>Module</th><th>CLI command</th><th>Description</th></tr></thead>
+    <tbody>
+    <tr><td>Username Intel</td><td><code>nighthawk username octocat</code></td><td>Checks public profile URLs (cautious classification).</td></tr>
+    <tr><td>Domain Intel</td><td><code>nighthawk domain example.com</code></td><td>DNS records + RDAP registration lookup.</td></tr>
+    <tr><td>DNS Intel</td><td><code>nighthawk dns example.com</code></td><td>DNS record resolution (A, AAAA, MX, NS, TXT, CNAME, SOA).</td></tr>
+    <tr><td>Subdomain Intel</td><td><code>nighthawk subdomains example.com</code></td><td>Passive discovery via Certificate Transparency (crt.sh).</td></tr>
+    <tr><td>IP Intel</td><td><code>nighthawk ip 8.8.8.8</code></td><td>RDAP, reverse DNS, network range (public IPs only).</td></tr>
+    <tr><td>Email Intel</td><td><code>nighthawk email a@b.com</code></td><td>Syntax, MX, disposable check, optional HIBP.</td></tr>
+    <tr><td>Image Intel</td><td><code>nighthawk image ./photo.jpg</code></td><td>EXIF metadata extraction from local images.</td></tr>
+    <tr><td>Search Intel</td><td><code>nighthawk search "query"</code></td><td>Search via configured providers (Brave, Tavily).</td></tr>
+    </tbody>
+  </table>
+</section>
+{% endblock %}
