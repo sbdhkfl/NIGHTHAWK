@@ -40,16 +40,21 @@ def run(target: str, session=None) -> list[dict[str, Any]]:
     except ValueError as exc:
         raise ValueError("enter one private IP address; CIDR ranges are not accepted") from exc
 
-    if not address.is_private or address.is_loopback or address.is_link_local:
+    allowed_networks = (
+        ipaddress.ip_network("10.0.0.0/8"),
+        ipaddress.ip_network("172.16.0.0/12"),
+        ipaddress.ip_network("192.168.0.0/16"),
+    )
+    if address.version != 4 or not any(address in network for network in allowed_networks):
         raise ValueError(
-            "ip-ports only accepts a private LAN address (not public, loopback, or link-local)"
+            "ip-ports only accepts one RFC1918 private IPv4 LAN address"
         )
 
     opened: list[dict[str, Any]] = []
     checked = 0
     for port, service, advice in COMMON_PORTS:
         checked += 1
-        sock = socket.socket(socket.AF_INET6 if address.version == 6 else socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(0.35)
         try:
             result = sock.connect_ex((str(address), port))
