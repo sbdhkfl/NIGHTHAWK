@@ -354,7 +354,7 @@ def _print_findings(findings: list[dict]) -> None:
     for finding in findings:
         data = finding.get("result_data", {})
         if data.get("match_type") == "possible_public_reference":
-            console.print("\\n[bold yellow]Possible public reference[/bold yellow]")
+            console.print("\n[bold yellow]Possible public reference[/bold yellow]")
             if data.get("category"):
                 console.print(f"Category: {data['category']}")
             console.print(f"Title: {data.get('title') or '-'}")
