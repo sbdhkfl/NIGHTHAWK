@@ -10,6 +10,7 @@ from typing import Any
 
 from nighthawk.core.validation import validate_domain
 from nighthawk.integrations.rdap import rdap_lookup
+from nighthawk.integrations.public_footprint import collect_public_search_findings
 from nighthawk.modules.base import resolve_dns
 
 
@@ -78,6 +79,9 @@ def run(domain: str, session=None) -> list[dict[str, Any]]:
             }
         )
 
+    findings.extend(collect_public_search_findings(
+        domain, "domain", f'"{domain}"'
+    ))
     return findings
 
 
