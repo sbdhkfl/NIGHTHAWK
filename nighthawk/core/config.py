@@ -47,6 +47,8 @@ class Settings:
         self.TAVILY_API_KEY: str | None = os.getenv("TAVILY_API_KEY") or None
         self.HIBP_API_KEY: str | None = os.getenv("HIBP_API_KEY") or None
         self.ABUSEIPDB_API_KEY: str | None = os.getenv("ABUSEIPDB_API_KEY") or None
+        # Explicit opt-in: identifier queries are sent to configured search providers.
+        self.ENABLE_PUBLIC_SEARCH: bool = os.getenv("NIGHTHAWK_ENABLE_PUBLIC_SEARCH", "false").lower() == "true"
 
         # --- Network / rate limits ---
         self.HTTP_TIMEOUT: float = float(os.getenv("NIGHTHAWK_HTTP_TIMEOUT", "15"))
