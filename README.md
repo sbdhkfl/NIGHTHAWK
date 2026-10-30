@@ -8,7 +8,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 
 ## What it can investigate
 
-- **Email:** technical mail-domain checks plus optional public-page searches categorized into social media, developer, professional/portfolio, forums/communities, and gaming/streaming. These search indexed public pages only; they do not verify registrations.
+- **Email:** technical mail-domain checks plus API-free, category-specific public search links for social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Results must be reviewed manually and do not verify registrations.
 - **Username:** possible matching public profiles on supported platforms. A match is a lead, not proof that you own or logged into an account.
 - **Domain / URL:** DNS and RDAP information; `nighthawk url https://example.com/path` extracts the hostname and investigates the domain without crawling the page.
 - **Subdomains:** passive Certificate Transparency discovery.
@@ -16,7 +16,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 - **Phone:** international numbering-plan metadata; no subscriber identification or device tracking.
 - **Image:** local EXIF metadata, including camera make/model, timestamps and GPS coordinates when embedded.
 - **CVE:** lookup in CISA's Known Exploited Vulnerabilities catalog; no scanning or exploitation.
-- **Public references:** optional search-engine-indexed references for email, username, domain and public IP using configured Brave/Tavily providers. Disabled by default; results are low-confidence leads, not proof.
+- **Public references:** manual public-search links for email (no API key required); optional automated public-page searches for other identifiers can still use configured providers. Search links are not proof of account registration.
 - **Investigations and reports:** save findings locally and export JSON, CSV or HTML.
 
 NIGHTHAWK cannot reveal every website where an email address has logged in. Private login history is held by each service or may be available in your own browser/password manager. Public account checks can return false positives and false negatives.
@@ -98,7 +98,7 @@ nighthawk subdomains example.com
 # Public IP registration and reverse-DNS information (no port scan)
 nighthawk ip 8.8.8.8
 
-# Search public indexed pages for an email in separate categories
+# Generate API-free public search links for an email by category
 nighthawk email-public you@example.com
 
 # Check common TCP ports on ONE private LAN IPv4 address you own/administer
@@ -174,7 +174,7 @@ Optional variables include:
 - `BRAVE_SEARCH_API_KEY` — Brave Search provider.
 - `TAVILY_API_KEY` — Tavily search provider.
 - `ABUSEIPDB_API_KEY` — aggregate reputation information for public IPs.
-- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly allow identifiers to be sent to configured Brave/Tavily providers. Email searches use social, developer, professional/portfolio, forums/communities and gaming/streaming public-page categories. This sends the entered email to those providers. Keep it `false` unless you accept that data sharing.
+- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly enable optional automated public searches for non-email modules using configured Brave/Tavily providers. The `email-public` command does not use these APIs: it creates manual search links, and the search engine receives the email only if you open a link.
 
 Keep `.env` private. Never commit API keys or personal investigation data.
 
@@ -209,7 +209,7 @@ nighthawk investigations --help
 - Public profile checks are indicative; HTTP 200 is not proof of account ownership.
 - Email checks do not verify mailbox access or reveal all services where an address has logged in.
 - Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.
-- Identifier searches are disabled by default. When enabled, queries are sent to configured third-party search providers. Results show public indexed references, not whether an account is registered. Dating and adult-content account discovery is not included.
+- The `email-public` command generates search links locally without calling an API. If you open a link, the search engine receives the email query. Other optional automated identifier searches send queries to configured third-party providers. Dating and adult-content account discovery is not included.
 - `ip-ports` accepts only RFC1918 private IPv4 addresses and requires `--authorized`; it checks a fixed set of common TCP ports. Open ports are exposure signals, not confirmed vulnerabilities.
 - `lan-devices` reads only the Kali host's existing ARP/NDP neighbor cache; it may omit devices and is not the router's authoritative client list.
 - IP location is not precise geolocation.
