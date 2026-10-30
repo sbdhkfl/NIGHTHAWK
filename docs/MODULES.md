@@ -61,3 +61,12 @@ Provider-based search via configured API keys:
 
 No search engine scraping. Results include provider, title, URL, snippet and
 search timestamp.
+
+
+## I. Phone metadata (`phone`)
+
+Accepts international numbers with a country calling code and reports formatting, numbering region, calling code, possible/valid numbering-plan status, and number type. It does not identify subscribers or locate devices.
+
+## J. Optional IP reputation (`ip`)
+
+When `ABUSEIPDB_API_KEY` is configured, public IP investigations query AbuseIPDB for aggregate reputation signals. The queried IP is sent to that provider. Private and non-global IPs remain blocked. Scores are signals, not proof of malicious activity.
