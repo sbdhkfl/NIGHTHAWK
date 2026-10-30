@@ -80,7 +80,7 @@ def run(username: str, session=None) -> list[dict[str, Any]]:
     import asyncio
 
     try:
-        return asyncio.run(_check_username(username))
+        findings = asyncio.run(_check_username(username))
     except RuntimeError:
         # asyncio.run cannot be used when a running loop already exists (e.g.
         # inside an async web handler). Fall back to a fresh loop in a thread.
