@@ -140,7 +140,7 @@ def email(value: str) -> None:
 
 @app.command(name="email-public")
 def email_public(value: str) -> None:
-    """Search public indexed pages for an email across social, developer and community categories."""
+    """Generate API-free public search links for an email across supported categories."""
     _show_banner()
     engine = Engine()
     inv = engine.create_investigation(f"email public references: {value}")
@@ -353,6 +353,15 @@ def _print_findings(findings: list[dict]) -> None:
     console.print(_findings_table("Findings", rows))
     for finding in findings:
         data = finding.get("result_data", {})
+        if data.get("status") == "manual_search":
+            console.print("\\n[bold cyan]Manual public search[/bold cyan]")
+            console.print(f"Category: {data.get('category', '-')}")
+            console.print(f"Query: {data.get('query', '-')}")
+            search_url = data.get("search_url")
+            if search_url:
+                console.print(f"[link={search_url}]Open search results[/link]")
+            console.print("[dim]Review results manually; a result does not confirm an account.[/dim]")
+            console.print("[dim]The search engine receives the email only if you open the link.[/dim]")
         if data.get("match_type") == "possible_public_reference":
             console.print("\n[bold yellow]Possible public reference[/bold yellow]")
             if data.get("category"):
