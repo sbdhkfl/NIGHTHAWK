@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
+import re
 from typing import Any
 
 import httpx
@@ -42,7 +43,7 @@ def _catalog() -> dict[str, Any]:
 def run(cve_id: str, session=None) -> list[dict[str, Any]]:
     """Find a CVE in the public CISA Known Exploited Vulnerabilities catalog."""
     cve = cve_id.strip().upper()
-    if len(cve) > 24 or not __import__("re").fullmatch(r"CVE-\d{4}-\d{4,}", cve):
+    if len(cve) > 24 or not re.fullmatch(r"CVE-\d{4}-\d{4,}", cve):
         raise ValueError("expected a CVE identifier such as CVE-2024-12345")
     payload = _catalog()
     if payload.get("error"):
