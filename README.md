@@ -8,7 +8,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 
 ## What it can investigate
 
-- **Email:** technical mail-domain checks, categorized public references, and a local-only saved-account audit from your own browser/password-manager CSV export for social media, developer, professional/portfolio, forums/communities, and gaming/streaming. Results must be reviewed manually and do not verify registrations.
+- **Email:** one simple command for technical mail-domain checks and API-free public-reference search links across social, developer, professional, forums and gaming categories. Review links manually; they do not verify registrations.
 - **Username:** possible matching public profiles on supported platforms. A match is a lead, not proof that you own or logged into an account.
 - **Domain / URL:** DNS and RDAP information; `nighthawk url https://example.com/path` extracts the hostname and investigates the domain without crawling the page.
 - **Subdomains:** passive Certificate Transparency discovery.
@@ -19,7 +19,7 @@ NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framew
 - **Public references:** manual public-search links for email (no API key required); optional automated public-page searches for other identifiers can still use configured providers. Search links are not proof of account registration.
 - **Investigations and reports:** save findings locally and export JSON, CSV or HTML.
 
-NIGHTHAWK cannot reveal every website where an email address has logged in. Private login history is held by each service or may be available in your own browser/password manager. `email-audit` can inventory matching saved-login entries in a local CSV export; it does not inspect passwords or upload the file. Public account checks can return false positives and false negatives.
+NIGHTHAWK cannot reveal every website where an email address has logged in. Private login history is held by each service. Public search results are only leads, not proof that an account exists.
 
 ## Installation
 
