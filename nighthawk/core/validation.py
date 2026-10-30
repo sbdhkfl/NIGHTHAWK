@@ -106,6 +106,20 @@ def is_private_or_reserved(ip_str: str) -> bool:
     )
 
 
+def validate_phone(value: str) -> str:
+    """Validate and normalize an international phone number to E.164."""
+    if not value or not isinstance(value, str):
+        raise ValidationError("phone number is required")
+    try:
+        import phonenumbers
+        parsed = phonenumbers.parse(value.strip(), None)
+    except Exception as exc:
+        raise ValidationError("enter a phone number with an international country code") from exc
+    if not phonenumbers.is_possible_number(parsed):
+        raise ValidationError("phone number is not possible for its numbering plan")
+    return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.E164)
+
+
 def validate_image_filename(filename: str) -> str:
     """Validate an uploaded image filename against the allowed extensions.
 
