@@ -4,7 +4,7 @@
 
 **See the public footprint.**
 
-NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framework with a terminal interface and a local web dashboard.
+NIGHTHAWK is a modular OSINT and personal digital-footprint investigation framework with a simple terminal interface.
 
 ## What it can investigate
 
@@ -41,7 +41,6 @@ source .venv/bin/activate
 
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pip install -e ".[dashboard]"
 
 # Verify the installation and see the commands actually registered
 nighthawk --help
@@ -98,9 +97,6 @@ nighthawk subdomains example.com
 # Public IP registration and reverse-DNS information (no port scan)
 nighthawk ip 8.8.8.8
 
-# Generate API-free public search links for an email by category
-nighthawk email-public you@example.com
-
 # Check common TCP ports on ONE private LAN IPv4 address you own/administer
 nighthawk ip-ports 192.168.1.1 --authorized
 
@@ -152,14 +148,6 @@ nighthawk report 1 --format html --output report
 
 The output path is written in the current working directory unless an absolute path is supplied. The command adds the matching file extension when needed.
 
-### Dashboard
-
-```bash
-nighthawk dashboard
-```
-
-Open **http://127.0.0.1:8000** on the same computer. The dashboard binds to localhost by default.
-
 ### Configuration
 
 Copy the example environment file and add only the API keys you choose to use:
@@ -209,7 +197,7 @@ nighthawk investigations --help
 - Public profile checks are indicative; HTTP 200 is not proof of account ownership.
 - Email checks do not verify mailbox access or reveal all services where an address has logged in.
 - Image files are processed locally; GPS is reported only when embedded in the file. Images are never uploaded to search providers.
-- The `email-audit` command reads your own CSV export locally, ignores password columns, and does not upload or persist secrets. Treat the export as highly sensitive and delete it securely when finished.\n- The `email-public` command generates search links locally without calling an API. If you open a link, the search engine receives the email query. Other optional automated identifier searches send queries to configured third-party providers. Dating and adult-content account discovery is not included.
+- The `email` command generates public search links locally without calling an API. If you open a link, the search engine receives the email query. Results are not proof of account registration.
 - `ip-ports` accepts only RFC1918 private IPv4 addresses and requires `--authorized`; it checks a fixed set of common TCP ports. Open ports are exposure signals, not confirmed vulnerabilities.
 - `lan-devices` reads only the Kali host's existing ARP/NDP neighbor cache; it may omit devices and is not the router's authoritative client list.
 - IP location is not precise geolocation.
