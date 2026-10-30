@@ -95,7 +95,7 @@ Optional provider keys are read from environment variables in `.env`. Start from
 cp .env.example .env
 ```
 
-Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. Only configure providers you intend to use. Keep the file private and never commit it.
+Supported optional keys include `HIBP_API_KEY`, `BRAVE_SEARCH_API_KEY`, `TAVILY_API_KEY` and `ABUSEIPDB_API_KEY`. Set `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` only if you explicitly want email, username, domain and public-IP identifiers sent to configured Brave/Tavily search providers. This is disabled by default. Phone numbers are not reverse-searched, and image files are never uploaded. Keep `.env` private and never commit it.
 
 ## Troubleshooting
 
