@@ -153,9 +153,19 @@ def email_public(value: str) -> None:
 
 
 @app.command(name="ip-ports")
-def ip_ports(value: str) -> None:
+def ip_ports(
+    value: str,
+    authorized: bool = typer.Option(
+        False,
+        "--authorized",
+        help="Confirm you own or administer this private LAN device/network.",
+    ),
+) -> None:
     """Check a fixed set of common TCP ports on one private LAN IP you administer."""
     _show_banner()
+    if not authorized:
+        console.print("[red]Refusing to scan without --authorized confirmation.[/red]")
+        raise typer.Exit(code=1)
     engine = Engine()
     inv = engine.create_investigation(f"private LAN TCP exposure check: {value}")
     try:
