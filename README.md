@@ -168,13 +168,6 @@ NIGHTHAWK OSINT collects publicly available information only and enforces:
 
 Read `docs/USAGE.md` and `SECURITY.md` before running against third parties.
 
-## Screenshots
-
-<!-- Add screenshots here before publishing -->
-- [ ] Terminal interface
-- [ ] Web dashboard overview
-- [ ] Investigation detail page
-- [ ] Relationship graph
 
 ## License
 
