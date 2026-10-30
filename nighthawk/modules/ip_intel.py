@@ -1,12 +1,9 @@
 """IP intelligence module.
 
-Validates IPv4/IPv6 addresses, rejects private/loopback/multicast/reserved
-addresses for external lookups, performs RDAP lookup, reverse DNS, and
-reports network/registration information.
-
-Never claims precise physical geolocation from an IP address.
+Provides public network-registration and DNS intelligence only. Private,
+loopback, multicast, link-local, reserved and otherwise non-global addresses
+are never sent to external intelligence providers.
 """
-
 from __future__ import annotations
 
 import ipaddress
@@ -19,97 +16,82 @@ from nighthawk.core.validation import is_private_or_reserved, validate_ip
 from nighthawk.integrations.rdap import rdap_lookup
 
 
-def run(ip: str, session=None) -> list[dict[str, Any]]:
-    """Run IP intelligence lookups.
-
-    Returns a list of finding dicts compatible with the investigation engine.
-    """
-    ip = validate_ip(ip)
-
-    if is_private_or_reserved(ip):
-        return [
-            {
-                "module": "ip",
-                "target": ip,
-                "result_data": {
-                    "error": "refused: private, loopback, multicast or reserved address",
-                    "note": "external intelligence lookups are not performed for non-public addresses",
-                },
-                "source": None,
-                "confidence": "none",
-            }
-        ]
-
-    findings: list[dict[str, Any]] = []
-
-    # Reverse DNS.
-    reverse_dns: list[str] = []
+def _safe_reverse_dns(ip: str) -> list[str]:
     try:
         rev_name = dns.reversename.from_address(ip)
         answers = dns.resolver.resolve(rev_name, "PTR", raise_on_no_answer=False)
-        reverse_dns = [str(rdata).rstrip(".") for rdata in answers]
-    except Exception:  # pragma: no cover - best effort
-        reverse_dns = []
+        return sorted({str(item).rstrip(".") for item in answers})
+    except Exception:
+        return []
 
-    findings.append(
-        {
-            "module": "ip",
-            "target": ip,
+
+def run(ip: str, session=None) -> list[dict[str, Any]]:
+    """Run public IP registration and reverse-DNS lookups."""
+    ip = validate_ip(ip)
+    address = ipaddress.ip_address(ip)
+
+    if is_private_or_reserved(ip) or not address.is_global:
+        return [{
+            "module": "ip", "target": ip,
             "result_data": {
-                "version": ipaddress.ip_address(ip).version,
-                "reverse_dns": reverse_dns,
+                "error": "refused: address is not globally routable",
+                "address_type": "private, loopback, link-local, multicast, reserved, or otherwise non-global",
+                "note": "External intelligence lookups are not performed for non-public addresses.",
             },
-            "source": f"dns://{ip}",
-            "confidence": "high" if reverse_dns else "medium",
-        }
-    )
+            "source": None, "confidence": "none",
+        }]
 
-    # RDAP registration / ASN / network range.
+    findings: list[dict[str, Any]] = []
+    reverse_dns = _safe_reverse_dns(ip)
+    findings.append({
+        "module": "ip", "target": ip,
+        "result_data": {
+            "version": address.version,
+            "is_global": address.is_global,
+            "is_multicast": address.is_multicast,
+            "is_private": address.is_private,
+            "reverse_dns": reverse_dns,
+            "reverse_dns_found": bool(reverse_dns),
+        },
+        "source": f"dns://{ip}", "confidence": "high" if reverse_dns else "medium",
+    })
+
     try:
         rdap = rdap_lookup(ip)
-    except Exception as exc:  # pragma: no cover - defensive
-        rdap = {"error": str(exc)}
-
+    except Exception:
+        rdap = {"error": "RDAP provider request failed"}
     rdap_data = {k: v for k, v in rdap.items() if v is not None and v != {}}
     if rdap_data:
         network = {
-            k: rdap_data.get(k)
-            for k in ("startAddress", "endAddress", "ipVersion", "cidr0_cidr")
-            if rdap_data.get(k)
+            key: rdap_data.get(key)
+            for key in ("startAddress", "endAddress", "ipVersion", "cidr0_cidr")
+            if rdap_data.get(key)
         }
-        org = None
+        organization = None
         for entity in rdap_data.get("entities", []):
-            if "registrant" in [r.lower() for r in entity.get("roles", [])] or org is None:
-                org = entity.get("name") or org
-        findings.append(
-            {
-                "module": "ip",
-                "target": ip,
-                "result_data": {
-                    "rdap": rdap_data,
-                    "organization": org,
-                    "network_range": network or None,
-                    "asn": rdap_data.get("handle"),
-                },
-                "source": rdap_data.get("rdap_url") or f"https://rdap.org/ip/{ip}",
-                "confidence": "medium",
-                "note": "country-level registration info only; no precise geolocation claimed",
-            }
-        )
+            roles = [role.lower() for role in entity.get("roles", [])]
+            if "registrant" in roles or organization is None:
+                organization = entity.get("name") or organization
+        findings.append({
+            "module": "ip", "target": ip,
+            "result_data": {
+                "rdap": rdap_data,
+                "organization": organization,
+                "network_range": network or None,
+                "asn_or_registry_handle": rdap_data.get("handle"),
+                "registration_country": rdap_data.get("country"),
+                "note": "Network registration data identifies an allocation or provider, not the individual using the address.",
+            },
+            "source": rdap_data.get("rdap_url") or f"https://rdap.org/ip/{ip}",
+            "confidence": "medium",
+        })
 
-    if not findings:
-        findings.append(
-            {
-                "module": "ip",
-                "target": ip,
-                "result_data": {
-                    "message": "no registration or reverse-DNS data discovered",
-                },
-                "source": None,
-                "confidence": "none",
-            }
-        )
-
+    if len(findings) == 1 and not reverse_dns:
+        findings.append({
+            "module": "ip", "target": ip,
+            "result_data": {"message": "No RDAP or reverse-DNS information was discovered."},
+            "source": None, "confidence": "none",
+        })
     return findings
 
 
