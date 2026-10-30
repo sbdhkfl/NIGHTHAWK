@@ -57,7 +57,6 @@ py -3 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e .
-python -m pip install -e ".[dashboard]"
 nighthawk --help
 ```
 
@@ -162,7 +161,7 @@ Optional variables include:
 - `BRAVE_SEARCH_API_KEY` — Brave Search provider.
 - `TAVILY_API_KEY` — Tavily search provider.
 - `ABUSEIPDB_API_KEY` — aggregate reputation information for public IPs.
-- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly enable optional automated public searches for non-email modules using configured Brave/Tavily providers. The `email-public` command does not use these APIs: it creates manual search links, and the search engine receives the email only if you open a link.
+- `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` — explicitly enable optional automated public searches for non-email modules using configured Brave/Tavily providers. The `email` command creates manual search links locally, and the search engine receives the email only if you open a link.
 
 Keep `.env` private. Never commit API keys or personal investigation data.
 
