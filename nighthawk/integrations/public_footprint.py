@@ -133,4 +133,61 @@ def collect_email_public_references(email: str) -> list[dict[str, Any]]:
     return findings
 
 
-__all__ = ["collect_email_public_references", "EMAIL_CATEGORIES"]
+
+def collect_public_search_findings(
+    target: str, module: str, query: str
+) -> list[dict[str, Any]]:
+    """Generic opt-in public-page search used by non-email modules."""
+    settings = get_settings()
+    if not settings.ENABLE_PUBLIC_SEARCH:
+        return []
+    if not _provider_ready(settings):
+        return [{
+            "module": module,
+            "target": target,
+            "result_data": {
+                "search_status": "provider_not_configured",
+                "message": "Configure BRAVE_SEARCH_API_KEY or TAVILY_API_KEY.",
+            },
+            "source": None,
+            "confidence": "none",
+        }]
+    try:
+        results = search_all_providers(query)
+    except Exception:
+        results = []
+    findings: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in results:
+        url = item.get("url")
+        if not isinstance(url, str):
+            continue
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            continue
+        if url in seen:
+            continue
+        seen.add(url)
+        findings.append({
+            "module": module,
+            "target": target,
+            "result_data": {
+                "match_type": "possible_public_reference",
+                "provider": item.get("provider"),
+                "title": item.get("title"),
+                "url": url,
+                "snippet": item.get("snippet"),
+                "interpretation": (
+                    "A public search result is a lead only; it does not establish "
+                    "identity, account ownership, or current account access."
+                ),
+            },
+            "source": url,
+            "confidence": "low",
+        })
+        if len(findings) >= 8:
+            break
+    return findings
+
+
+__all__ = ["collect_email_public_references", "collect_public_search_findings", "EMAIL_CATEGORIES"]
