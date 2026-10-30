@@ -298,6 +298,15 @@ def _print_findings(findings: list[dict]) -> None:
         for f in findings
     ]
     console.print(_findings_table("Findings", rows))
+    for finding in findings:
+        data = finding.get("result_data", {})
+        if data.get("match_type") == "possible_public_reference":
+            console.print(f"\\n[bold yellow]Possible public reference[/bold yellow]")
+            console.print(f"Title: {data.get('title') or '-'}")
+            console.print(f"URL: {data.get('url') or '-'}")
+            if data.get("snippet"):
+                console.print(f"Snippet: {data['snippet']}")
+            console.print("[dim]Lead only — this does not verify identity or account ownership.[/dim]")
 
 
 if __name__ == "__main__":  # pragma: no cover
