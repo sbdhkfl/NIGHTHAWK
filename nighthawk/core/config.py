@@ -46,6 +46,7 @@ class Settings:
         self.BRAVE_SEARCH_API_KEY: str | None = os.getenv("BRAVE_SEARCH_API_KEY") or None
         self.TAVILY_API_KEY: str | None = os.getenv("TAVILY_API_KEY") or None
         self.HIBP_API_KEY: str | None = os.getenv("HIBP_API_KEY") or None
+        self.ABUSEIPDB_API_KEY: str | None = os.getenv("ABUSEIPDB_API_KEY") or None
 
         # --- Network / rate limits ---
         self.HTTP_TIMEOUT: float = float(os.getenv("NIGHTHAWK_HTTP_TIMEOUT", "15"))
