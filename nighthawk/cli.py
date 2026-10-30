@@ -354,7 +354,7 @@ def _print_findings(findings: list[dict]) -> None:
     for finding in findings:
         data = finding.get("result_data", {})
         if data.get("status") == "manual_search":
-            console.print("\\n[bold cyan]Manual public search[/bold cyan]")
+            console.print("\n[bold cyan]Manual public search[/bold cyan]")
             console.print(f"Category: {data.get('category', '-')}")
             console.print(f"Query: {data.get('query', '-')}")
             search_url = data.get("search_url")
