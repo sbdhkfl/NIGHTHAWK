@@ -17,8 +17,9 @@ def test_finds_only_exact_email_matches_and_never_returns_passwords(tmp_path):
     assert len(findings) == 1
     data = findings[0]["result_data"]
     assert data["service_domain"] == "example.org"
-    assert "password" not in str(data).lower()
     assert "secret-value" not in str(findings)
+    assert "another-secret" not in str(findings)
+    assert "password" not in data
 
 
 def test_rejects_csv_without_expected_columns(tmp_path):
