@@ -6,6 +6,7 @@ Rich-powered CLI for running intelligence modules and managing investigations.
 from __future__ import annotations
 
 import json
+from urllib.parse import urlsplit
 
 import typer
 from rich.console import Console
@@ -66,6 +67,34 @@ def domain(value: str) -> None:
     engine = Engine()
     inv = engine.create_investigation(f"domain check: {value}")
     findings = engine.run_module(inv.id, "domain", value, "domain")
+    _print_findings(findings)
+
+
+@app.command()
+def url(value: str) -> None:
+    """Investigate the public domain behind an HTTP or HTTPS URL."""
+    _show_banner()
+    parsed = urlsplit(value.strip())
+    if (
+        parsed.scheme.lower() not in ("http", "https")
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+    ):
+        console.print("[red]Error:[/red] enter a valid http:// or https:// URL without embedded credentials.")
+        raise typer.Exit(code=1)
+
+    from nighthawk.core.validation import validate_domain
+
+    try:
+        host = validate_domain(parsed.hostname)
+    except ValueError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from None
+
+    engine = Engine()
+    inv = engine.create_investigation(f"URL footprint: {value.strip()}")
+    findings = engine.run_module(inv.id, "domain", host, "domain")
     _print_findings(findings)
 
 
