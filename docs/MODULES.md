@@ -1,5 +1,9 @@
 # Modules — NIGHTHAWK OSINT
 
+## Public reference discovery (shared integration)
+
+When `NIGHTHAWK_ENABLE_PUBLIC_SEARCH=true` and at least one Brave/Tavily API key is configured, the email, username, domain and public-IP modules append up to eight deduplicated public search results. These are marked `possible_public_reference` with low confidence. The exact identifier is sent to the configured provider, so the feature is disabled by default. Results are leads only and do not establish identity or account ownership. Phone lookups remain numbering-plan metadata; image analysis remains local-only EXIF extraction.
+
 ## A. Username intelligence (`username`)
 
 Checks a username against public profile URLs:
