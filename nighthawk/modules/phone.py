@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import Any
 
 import phonenumbers
-from phonenumbers import NumberParseException, PhoneNumberType, carrier, geocoder
+from phonenumbers import NumberParseException, PhoneNumberType
 
 
 def run(value: str, session=None) -> list[dict[str, Any]]:
