@@ -1,27 +1,23 @@
-"""Email intelligence module.
+"""Email intelligence using non-invasive, public domain signals.
 
-Collects technical, domain-level email signals from DNS and optional breach
-status from Have I Been Pwned when an API key is explicitly configured.
-
-This module does not attempt mailbox logins, SMTP recipient probing, password
-discovery, account enumeration, or collection of private personal records.
+No mailbox login, SMTP recipient probing, account enumeration, or password
+discovery is performed. HIBP is queried only when the user configures an API key.
 """
 from __future__ import annotations
 
 from typing import Any
 
+import dns.resolver
+
 from nighthawk.core.config import get_settings
 from nighthawk.core.validation import validate_email
 from nighthawk.integrations.hibp import hibp_lookup
-from nighthawk.modules.base import resolve_dns
 
 DISPOSABLE_DOMAINS: frozenset[str] = frozenset({
     "mailinator.com", "guerrillamail.com", "10minutemail.com",
     "temp-mail.org", "dispostable.com", "maildrop.cc", "yopmail.com",
     "tempmailo.com", "getnada.com",
 })
-
-# Common MX patterns are only hints about infrastructure, not proof of identity.
 _PROVIDER_HINTS = (
     (("google.com", "googlemail.com"), "Google Workspace / Gmail"),
     (("outlook.com", "protection.outlook.com", "hotmail.com"), "Microsoft mail"),
@@ -32,9 +28,13 @@ _PROVIDER_HINTS = (
 )
 
 
-def _txt_records(name: str) -> list[str]:
+def _resolve_records(name: str, record_type: str) -> list[str]:
+    """Synchronous DNS lookup with bounded resolver lifetime."""
+    resolver = dns.resolver.Resolver()
+    resolver.lifetime = 5.0
     try:
-        return [str(value).strip('"') for value in resolve_dns(name, ["TXT"]).get("TXT", [])]
+        answers = resolver.resolve(name, record_type, raise_on_no_answer=False)
+        return [str(item).strip('"') for item in answers]
     except Exception:
         return []
 
@@ -48,21 +48,16 @@ def _provider_hint(mx_records: list[str]) -> str | None:
 
 
 def run(email: str, session=None) -> list[dict[str, Any]]:
-    """Run non-invasive technical checks for an email address."""
+    """Run technical checks for an email address."""
     email = validate_email(email)
     _, domain = email.rsplit("@", 1)
-    findings: list[dict[str, Any]] = []
-
-    findings.append({
+    findings: list[dict[str, Any]] = [{
         "module": "email", "target": email,
         "result_data": {"syntax_valid": True, "domain": domain},
         "source": None, "confidence": "high",
-    })
+    }]
 
-    try:
-        mx_records = resolve_dns(domain, ["MX"]).get("MX", [])
-    except Exception:
-        mx_records = []
+    mx_records = _resolve_records(domain, "MX")
     findings.append({
         "module": "email", "target": email,
         "result_data": {
@@ -84,18 +79,15 @@ def run(email: str, session=None) -> list[dict[str, Any]]:
         "source": None, "confidence": "medium" if is_disposable else "low",
     })
 
-    # Sender-policy signals are domain-level and do not validate a mailbox.
-    root_txt = _txt_records(domain)
+    root_txt = _resolve_records(domain, "TXT")
     spf = [record for record in root_txt if record.lower().startswith("v=spf1")]
-    dmarc = _txt_records(f"_dmarc.{domain}")
-    dmarc = [record for record in dmarc if record.lower().startswith("v=dmarc1")]
+    dmarc_records = _resolve_records(f"_dmarc.{domain}", "TXT")
+    dmarc = [record for record in dmarc_records if record.lower().startswith("v=dmarc1")]
     findings.append({
         "module": "email", "target": email,
         "result_data": {
-            "spf_records": spf,
-            "spf_present": bool(spf),
-            "dmarc_records": dmarc,
-            "dmarc_present": bool(dmarc),
+            "spf_records": spf, "spf_present": bool(spf),
+            "dmarc_records": dmarc, "dmarc_present": bool(dmarc),
             "note": "SPF and DMARC describe domain email-authentication policy; absence is not proof of fraud.",
         },
         "source": f"dns://{domain}", "confidence": "high",
@@ -125,7 +117,6 @@ def run(email: str, session=None) -> list[dict[str, Any]]:
             },
             "source": "https://haveibeenpwned.com/", "confidence": "none",
         })
-
     return findings
 
 
